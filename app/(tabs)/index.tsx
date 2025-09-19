@@ -39,12 +39,12 @@ export default function HomeScreen() {
           <View style={{ width: '100%', alignItems: 'center' }}>
             <Button title="配對" color="#4A90E2" onPress={() => setModalVisible(true)} />
           </View>
-          <Link href="/history">
+          <Link href="/(tabs)/history">
             <ThemedView style={styles.button}>
               <ThemedText type="subtitle">歷史紀錄</ThemedText>
             </ThemedView>
           </Link>
-          <Link href="/training">
+          <Link href="/(tabs)/training">
             <ThemedView style={[styles.button, styles.startButton]}>
               <ThemedText type="subtitle">開始訓練</ThemedText>
             </ThemedView>
