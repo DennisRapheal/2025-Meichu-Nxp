@@ -1,13 +1,12 @@
 import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { Link } from 'expo-router';
+import React, { useState } from 'react';
+import { Alert, Button, Modal, StyleSheet, TextInput, View } from 'react-native';
 
 import { HelloWave } from '@/components/hello-wave';
 import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
-import React, { useState } from 'react';
-import { Modal, View, TextInput, Button, Alert } from 'react-native';
 
 export default function HomeScreen() {
   const [modalVisible, setModalVisible] = useState(false);
@@ -27,10 +26,12 @@ export default function HomeScreen() {
         headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
         headerImage={
           <Image
-            source={require('@/assets/images/partial-react-logo.png')}
+            source={require('@/assets/images/baseball_background.jpg')}
             style={styles.reactLogo}
+            contentFit="cover"
           />
-        }>
+        }
+      >
         <ThemedView style={styles.titleContainer}>
           <ThemedText type="title">訓練首頁</ThemedText>
           <HelloWave />
@@ -134,10 +135,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#1D3D47',
   },
   reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
+    height: '100%',
+    width: '100%',
     position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
 });

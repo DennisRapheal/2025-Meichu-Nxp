@@ -3,5 +3,9 @@
     "source.fixAll": "explicit",
     "source.organizeImports": "explicit",
     "source.sortMembers": "explicit"
+  },
+  "files.associations": {
+    "*.embeddedhtml": "html",
+    "plyconfig.json": "jsonc"
   }
 }

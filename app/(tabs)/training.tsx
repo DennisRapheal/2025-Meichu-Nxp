@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, TouchableOpacity, Alert } from 'react-native';
+import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { Image } from 'expo-image';
+import React, { useState } from 'react';
+import { Alert, StyleSheet, TouchableOpacity, View } from 'react-native';
 
+const ipAddress = "192.168.1.58"; // ip address from imx93
 export default function TrainingScreen() {
   // 教練性別選項
   const genderOptions = ['男性', '女性'];
@@ -70,6 +71,50 @@ export default function TrainingScreen() {
     );
   };
 
+  // 發送訓練設定到 FastAPI 服務
+  const sendTrainingToAPI = async (config: { gender: string; style: string; sessions: string }) => {
+    try {
+      const message = {
+        user_name: "antony", // 可以修改為實際的用戶名稱
+        style: config.style,
+        gender: config.gender,
+        training_count: parseInt(config.sessions.replace(' 次', ''))
+      };
+
+      console.log('📤 發送訓練設定到 API:', message);
+
+      const response = await fetch(`http://${ipAddress}:8000/message`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(message),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log('✅ API 回應成功:', result);
+        Alert.alert(
+          '訓練成功紀錄', 
+          '可以到歷程記錄查看訓練結果...'
+        );
+      } else {
+        const errorText = await response.text();
+        console.error('❌ API 回應錯誤:', response.status, errorText);
+        Alert.alert(
+          '傳送失敗', 
+          `無法啟動訓練設備 (錯誤代碼: ${response.status})`
+        );
+      }
+    } catch (error) {
+      console.error('❌ 網路請求失敗:', error);
+      Alert.alert(
+        '連接失敗', 
+        '無法連接到訓練設備，請檢查網路連接和設備狀態'
+      );
+    }
+  };
+
   // 開始訓練處理函數
   const handleStartTraining = () => {
     const trainingConfig = {
@@ -80,7 +125,7 @@ export default function TrainingScreen() {
 
     Alert.alert(
       '訓練設定確認',
-      `教練性別: ${trainingConfig.gender}\n執教風格: ${trainingConfig.style}\n訓練次數: ${trainingConfig.sessions}`,
+      `教練性別: ${trainingConfig.gender}\n執教風格: ${trainingConfig.style}\n訓練次數: ${trainingConfig.sessions}\n\n確定要開始訓練嗎？`,
       [
         {
           text: '取消',
@@ -89,8 +134,13 @@ export default function TrainingScreen() {
         {
           text: '開始訓練',
           onPress: () => {
-            // 這裡可以添加實際的訓練邏輯
-            Alert.alert('訓練開始', '10 秒鐘後 IMX93 紀錄...');
+            // 發送訓練設定到 FastAPI 並開始訓練
+             if (selectedGender === 0) {
+              trainingConfig.gender = 'M';
+            } else {
+              trainingConfig.gender = 'F';
+            }
+            sendTrainingToAPI(trainingConfig);
           },
         },
       ]
@@ -102,8 +152,9 @@ export default function TrainingScreen() {
       headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
       headerImage={
         <Image
-          source={require('@/assets/images/partial-react-logo.png')}
+          source={require('@/assets/images/team_taiwan.jpg')}
           style={styles.headerImage}
+          contentFit="cover"
         />
       }
     >
@@ -230,10 +281,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   headerImage: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
+    height: '100%',
+    width: '100%',
     position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
 });
